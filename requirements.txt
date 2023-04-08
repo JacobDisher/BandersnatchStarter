@@ -1,7 +1,7 @@
 altair
 certifi
 Flask
-Fortuna
+
 gunicorn
 Jinja2
 joblib

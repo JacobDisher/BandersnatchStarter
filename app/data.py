@@ -8,18 +8,32 @@ from pymongo import MongoClient
 
 
 class Database:
+    load_dotenv()
+    database = MongoClient(getenv("DB_URL"), tlsCAFile=where())["Database"]
+
+    def __init__(self, collection: str):
+        self.collection = self.database[collection]
 
     def seed(self, amount):
-        pass
+        doc = [Monster().to_dict() for _ in range(amount)]
+        return self.collection.insert_many(doc).acknowledged
 
     def reset(self):
-        pass
+        self.collection.delete_many({})
 
     def count(self) -> int:
-        pass
+        return self.collection.count_documents({})
 
     def dataframe(self) -> DataFrame:
-        pass
+        documents = self.collection.find({}, {'_id': False})
+        return DataFrame(documents)
 
     def html_table(self) -> str:
-        pass
+        return self.dataframe().to_html()
+
+
+if __name__ == '__main__':
+    db = Database('BanderSnatch')
+    db.reset()
+    db.seed(3000)
+    print(db.count())
